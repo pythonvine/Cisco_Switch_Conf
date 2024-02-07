@@ -1,0 +1,48 @@
+Configuring Router-to-LDAP Server Communication
+The LDAP host is normally a multiuser system running LDAP server software such as Active Directory (Microsoft) and OpenLDAP. Configuring router-to-LDAP server communication can have several components:
+
+Hostname or IP address
+Port number
+Timeout period
+Base DN
+
+SUMMARY STEPS
+1.    enable
+2.    configure terminal
+3.    ldap server name
+4.    ipv4 ipv4-address
+5.    transport port port-number
+6.    timeout retransmit seconds
+7.    exit
+
+Commands:
+Device(config)# ldap server server1
+#Specifies the LDAP server IP address using IPv4.
+Device(config-ldap-server)# ipv4 192.0.2.1
+Configures the transport protocol for connecting to the LDAP peer.
+Device(config-ldap-server)# transport port 200
+Device(config-ldap-server)# timeout retransmit 20
+
+Configuring LDAP Protocol Parameters
+SUMMARY STEPS
+1.    enable
+2.    configure terminal
+3.    aaa
+4.    ldap server name
+5.    bind authenticate root-dn password [0 string | 7 string] string
+6.    search-filter user-object-type string
+7.    base-dn string
+8.    mode secure [no-negotiation]
+9.    secure cipher 3des-ede-cbc-sha
+10.    exit
+
+Device(config)# aaa new-model
+Device(config)# ldap server server1 
+#Specifies a shared secret text string used between the device and an LDAP server. Use the 0 line option to configure an unencrypted shared secret. Use the 7 line option to configure an encrypted shared secret.
+Device(config-ldap-server)# bind authenticate root-dn “cn=administrator,cn=users,dc=nac-blr2,dc=example,dc=com password”
+#Specifies the search filter to be used in the search requests.
+Device(config-ldap-server)# search-filter user-object-type string1
+Device(config-ldap-server)# base-dn “dc=sns,dc=example,dc=com” 
+Device(config-ldap-server)# mode secure no-negotiation 
+Specifies the ciphersuite in the case of a secure connection.
+Device(config-ldap-server)# secure cipher 3des-ede-cbc-sha
