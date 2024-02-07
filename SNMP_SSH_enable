@@ -1,0 +1,73 @@
+Installation of the new Switch
+1. mkdir /opt/unetlab/addons/qemu/nxosv9k-7.0.3.I7.4/ #As switch name
+
+#download switch Image :nxosv-final.7.0.3.I7.4.qcow2 image and copy eve-ng server
+2. cd /opt/unetlab/addons/qemu/nxosv9k-7.0.3.I7.4/
+mv nxosv-final.7.0.3.I7.4.qcow2 sataa.qcow2
+
+3. Fix permissions:
+
+/opt/unetlab/wrappers/unl_wrapper -a fixpermissions
+
+SNMP Enable v2e
+1. enable
+2. configure terminal
+3. snmp-server community public RO
+4. snmp-server community private RW
+5. exit
+6. write memory
+
+SNMP Enable v3 # noAuth
+Step 1: Create a Group
+snmp-server group group1 v3 noauth
+Step 2: Create a User
+snmp-server user user1 group1 v3
+
+SNMPv3 with AuthNoPriv (User encryption)
+Step 1: Create a Group
+snmp-server group group2 v3 auth
+Step 2: Create a User with a Password and Encryption
+snmp-server user user2 group2 v3 auth sha mypassword1
+
+SNMPv3 with AuthPriv (Full end to end Encryption)
+
+Step 1: Create a Group (set security to priv)
+snmp-server group group3 v3 priv
+Step 2: Create a User
+snmp-server user user3 group3 v3 auth sha mypassword1 priv aes 256 privpassword1
+
+
+SSH login Enable:
+https://www.thegeekstuff.com/2013/08/enable-ssh-cisco/
+1. Setup Management IP
+optional
+(config-if)# ip default-gateway 192.168.101.1 # not required
+(config-if)# interface vlan 101
+(config-if)# ip address 192.168.101.2 255.255.255.0
+Step 2: set hostname
+(config)# hostname myswitch
+(config)# ip domain-name myswitch.local
+Step 3. Generate the RSA Keys
+(config)# crypto key generate rsa
+How many bits in the modulus [512]: 1024
+Step 4. Setup the Line VTY configurations
+line vty 0 4
+(config-line)# transport input ssh
+(config-line)# login local
+(config-line)# password 7 # 0 for simple string as password and 7 Complex password
+(config-line)# exit
+
+If you have not set the console line yet, set it to the following values.
+# line console 0
+(config-line)# logging synchronous
+(config-line)# login local
+Step 5. Create the username password
+myswitch# config t
+Enter configuration commands, one per line.  End with CNTL/Z.
+myswitch(config)# username user_name password mypassword
+myswitch# enable secret myenablepassword
+myswitch# service password-encryption
+Step 6. Verify SSH access
+myswitch# sh ip ssh
+
+
